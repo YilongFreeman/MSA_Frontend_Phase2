@@ -1,5 +1,7 @@
 import * as React from 'react';
 import './App.css';
+import Button from '@material-ui/core/Button';
+
 
 // import logo from './logo.svg';
 interface Istate {
@@ -30,7 +32,7 @@ class App extends React.Component<{}, Istate>  {
         <p className="App-intro" style={{ visibility: this.state.appear ? 'visible' : 'hidden' }}>
           Welcome to Op Shop Online.
       </p>
-        <button onClick={this.tell}>Change</button>
+        <Button onClick={this.tell} variant="contained" color="secondary">Change</Button>
 
       </div>
     );
