@@ -10,7 +10,6 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
     constructor(props:any){
         super(props)
         this.searchTagByVoice=this.searchTagByVoice.bind(this)
-        this.getAccessToken=this.getAccessToken.bind(this)
         this.postAudio= this.postAudio.bind(this)
        
     }
@@ -19,13 +18,13 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
         return (
             <div> Yilong
                 
-                <div className="btn" onClick={this.getAccessToken}><i className="fa fa-microphone" /></div>
+                <div className="btn" onClick={this.searchTagByVoice}><i className="fa fa-microphone" /></div>
             </div> 
         )
     }
 
 
-    private searchTagByVoice(accessToken:string){
+    private searchTagByVoice(){
         const mediaConstraints = {
         audio: true
     }
@@ -34,8 +33,7 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
                 const mediaRecorder = new MediaStreamRecorder(stream);
                 mediaRecorder.mimeType = 'audio/wav'; // check this line for audio/wav
                 mediaRecorder.ondataavailable = (blob: any) => {
-                    console.log(blob)
-                    this.postAudio(blob, accessToken);
+                    this.postAudio(blob);
                     mediaRecorder.stop()
                 }
                 mediaRecorder.start(3000);
@@ -44,8 +42,9 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
                 console.error('media error', e);
             });
     }
-    
-    private getAccessToken() {
+
+    private postAudio(blob:any) {
+        let accessToken :any
        
         fetch("https://westus.api.cognitive.microsoft.com/sts/v1.0" + '/issueToken', {
             headers: {
@@ -57,14 +56,11 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
         }).then((response) => {
             // console.log(response.text())
             return response.text()
-        }).then((accessToken) => {
-            this.searchTagByVoice(accessToken);
+        }).then((response) => {
+            accessToken=response
         }).catch((error) => {
             console.log("Error", error)
         });
-    }
-    
-    private postAudio(blob: Blob, accessToken: string) {
         
         // posting audio
         fetch("https://westus.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US", {
