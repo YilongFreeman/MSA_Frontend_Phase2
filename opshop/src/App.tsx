@@ -3,6 +3,8 @@ import './App.css';
 import Button from '@material-ui/core/Button';
 import ShopItemTable from './Components/ShopItemTable';
 import ItemDetail from './Components/ItemDetail';
+import * as Webcam from "react-webcam";
+import Modal from 'react-responsive-modal';
 
 
 
@@ -12,6 +14,9 @@ interface IState {
   currentShopItem: any,
   shopItems: any[],
   searchByTag: any,
+  authenticated: boolean,
+  refCamera: any
+  open: boolean
 }
 
 
@@ -23,36 +28,54 @@ class App extends React.Component<{}, IState>  {
       appear: true,
       currentShopItem: { "id": 0, "title": "Loading ", "url": "", "tags": "⚆ _ ⚆", "uploaded": "", "width": "0", "height": "0" },
       shopItems: [],
-      searchByTag: ""
+      searchByTag: "",
+      authenticated: false,
+      refCamera: React.createRef(),
+      open: false
+
     }
     this.tell = this.tell.bind(this);
     this.toggle = this.toggle.bind(this);
     this.fetchMemes = this.fetchMemes.bind(this)
     this.searchByTag = this.searchByTag.bind(this)
-
-
+    this.authenticate = this.authenticate.bind(this)
   }
 
   public render() {
+    const { authenticated } = this.state
     return (
       <div >
         <header >
           Opshop
         </header>
-        <button onClick={this.toggle}>Change</button>
-        <p className="App-intro" style={{ visibility: this.state.appear ? 'visible' : 'hidden' }}>
-          Welcome to Op Shop Online.
-      </p>
-        <Button onClick={this.tell} variant="contained" color="secondary">Change</Button>
-        <div >
-          <input type="text" id="search-tag-textbox" placeholder="Search By Tags" />
-          <Button onClick={this.searchByTag} variant="contained" color="secondary">Search</Button>
+        <div>
+          {(!authenticated) ?
+            <Modal open={!authenticated} onClose={this.authenticate} closeOnOverlayClick={false} showCloseIcon={false} center={true}>
+              <Webcam
+                audio={false}
+                screenshotFormat="image/jpeg"
+                ref={this.state.refCamera}
+              />
+              <div className="row nav-row">
+                <div className="btn btn-primary bottom-button" onClick={this.authenticate}>Login</div>
+              </div>
+            </Modal> : ""}
         </div>
-        <ShopItemTable />
-        <ItemDetail currentShopItem={this.state.currentShopItem} />
-
-
-
+        {(authenticated) ?
+         <div>
+            <button onClick={this.toggle}>Change</button>
+            <p className="App-intro" style={{ visibility: this.state.appear ? 'visible' : 'hidden' }}>
+              Welcome to Op Shop Online.
+      </p>
+            <Button onClick={this.tell} variant="contained" color="secondary">Change</Button>
+            <div >
+              <input type="text" id="search-tag-textbox" placeholder="Search By Tags" />
+              <Button onClick={this.searchByTag} variant="contained" color="secondary">Search</Button>
+            </div>
+            <ShopItemTable />
+            <ItemDetail currentShopItem={this.state.currentShopItem} />
+            </div>
+            : ""}
       </div>
     );
   }
@@ -90,6 +113,43 @@ class App extends React.Component<{}, IState>  {
       return;
     }
     this.fetchMemes(tag);
+  }
+  private authenticate() {
+    const screenshot = this.state.refCamera.current.getScreenshot();
+    this.getFaceRecognitionResult(screenshot);
+  }
+  private getFaceRecognitionResult(image: string) {
+    if (image === null) {
+      return;
+    }
+    const base64 = require('base64-js');
+    const base64content = image.split(";")[1].split(",")[1]
+    const byteArray = base64.toByteArray(base64content);
+    const url = "https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction/668f4e84-065d-4ba2-b990-bebabbd15016/image";
+    const customVisionPredictionKey = "06e8a7ab485a459cb56d960a9e1ccfde";
+    fetch(url, {
+      body: byteArray,
+      headers: {
+        'cache-control': 'no-cache', 'Prediction-Key': customVisionPredictionKey, 'Content-Type': 'application/octet-stream'
+      },
+      method: 'POST'
+    })
+      .then((response: any) => {
+        if (!response.ok) {
+          // Error State
+          alert(response.statusText)
+        } else {
+          response.json().then((json: any) => {
+            const predictionResult = json.predictions[0];
+            if (predictionResult.probability > 0.7) {
+              this.setState({ authenticated: true })
+            } else {
+              this.setState({ authenticated: false })
+
+            }
+          });
+        }
+      })
   }
 
 
