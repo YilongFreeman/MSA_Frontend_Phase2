@@ -10,6 +10,8 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
     constructor(props:any){
         super(props)
         this.searchTagByVoice=this.searchTagByVoice.bind(this)
+        this.getAccessToken=this.getAccessToken.bind(this)
+        this.postAudio= this.postAudio.bind(this)
        
     }
     
@@ -17,7 +19,7 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
         return (
             <div> Yilong
                 
-                <div className="btn" onClick={this.getAccessToken}><i className="fa fa-microphone" /></div>
+                <button className="btn" onClick={this.getAccessToken}><i className="fa fa-microphone" /></button>
             </div> 
         )
     }
@@ -31,7 +33,7 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
         const mediaRecorder = new MediaStreamRecorder(stream);
         mediaRecorder.mimeType = 'audio/wav'; // check this line for audio/wav
         mediaRecorder.ondataavailable = (blob: any) => {
-            // this.postAudio(blob);
+            this.postAudio(blob,accessToken);
             mediaRecorder.stop()
         }
         mediaRecorder.start(3000);
@@ -64,6 +66,33 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
         });
     }
     
+    private postAudio(blob: Blob, accessToken: string) {
+        
+        const cognitiveServicesKey="4eb83ee96b484b67955f983644e40301"
+        // posting audio
+        fetch("https://westus.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-AU", {
+            body: blob, // this is a .wav audio file    
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer' + accessToken,
+                'Content-Type': 'audio/wav;codec=audio/pcm; samplerate=16000',
+                'Ocp-Apim-Subscription-Key': cognitiveServicesKey
+            },
+            method: 'POST'
+        }).then((res) => {
+            return res.json()
+        }).then((res: any) => {
+            console.log(res)
+            if (res.RecognitionStatus === "Success") {
+                const textBox = document.getElementById("search-tag-textbox") as HTMLInputElement;
+                textBox.value = (res.DisplayText as string).slice(0, -1)
+            }
+        }).catch((error) => {
+            console.log("Error", error)
+        });
+    }
+
+
 
 }
 
