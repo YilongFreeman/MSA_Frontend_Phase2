@@ -1,5 +1,6 @@
 import MediaStreamRecorder from 'msr';
 import * as React from 'react';
+import { Button } from '../../node_modules/@material-ui/core';
 
 interface IProps{
     
@@ -16,10 +17,9 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
     
     public render(){
         return (
-            <div> Yilong
-                
-                <div className="btn" onClick={this.searchTagByVoice}><i className="fa fa-microphone" /></div>
-            </div> 
+        
+                <Button variant="outlined" className="btn" onClick={this.searchTagByVoice}><i className="fa fa-microphone" /></Button>
+         
         )
     }
 
@@ -46,7 +46,7 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
     private postAudio(blob:any) {
         let accessToken :any
        
-        fetch("https://westus.api.cognitive.microsoft.com/sts/v1.0" + '/issueToken', {
+        fetch("https://westus.api.cognitive.microsoft.com/sts/v1.0/issueToken", {
             headers: {
                 'Content-Length': '0',
                 'Content-Type': 'application/x-www-form-urlencoded',

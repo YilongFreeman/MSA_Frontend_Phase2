@@ -5,6 +5,7 @@ import ShopItemTable from './Components/ShopItemTable';
 import ItemDetail from './Components/ItemDetail';
 import * as Webcam from "react-webcam";
 import Modal from 'react-responsive-modal';
+import TextField from '@material-ui/core/TextField';
 
 
 
@@ -17,7 +18,7 @@ interface IState {
   authenticated: boolean,
   refCamera: any,
   open: boolean,
-  uploadShopitem:any
+  uploadShopitem: any
 }
 
 
@@ -27,7 +28,7 @@ class App extends React.Component<{}, IState>  {
     super(props);
     this.state = {
       appear: true,
-      currentShopItem: { "id": 0, "title": "Loading ", "url": "", "tags": "⚆ _ ⚆", "uploaded": "", "width": "0", "height": "0" },
+      currentShopItem: { "id": 0, "title": " ", "url": "", "tags": "⚆ _ ⚆", "uploaded": "", "width": "0", "height": "0" },
       shopItems: [],
       searchByTag: "",
       authenticated: false,
@@ -35,17 +36,17 @@ class App extends React.Component<{}, IState>  {
       open: false,
       uploadShopitem: ""
     }
-    this.tell = this.tell.bind(this);
+    
     this.toggle = this.toggle.bind(this);
     this.fetchMemes = this.fetchMemes.bind(this)
     this.searchByTag = this.searchByTag.bind(this)
     this.authenticate = this.authenticate.bind(this)
     this.handleFileUpload = this.handleFileUpload.bind(this)
-    this.uploadShopitem=this.uploadShopitem.bind(this)
+    this.uploadShopitem = this.uploadShopitem.bind(this)
   }
 
   public render() {
-    const { open,authenticated } = this.state
+    const { open, authenticated } = this.state
     return (
       <div >
         <div>
@@ -63,66 +64,67 @@ class App extends React.Component<{}, IState>  {
         </div>
         {(authenticated) ?
           <div>
-            <button onClick={this.toggle}>Change</button>
+           
             <p className="App-intro" style={{ visibility: this.state.appear ? 'visible' : 'hidden' }}>
               Welcome to Op Shop Online.</p>
-            <Button onClick={this.tell} variant="contained" color="secondary">Change</Button>
+            
             <div >
-              <input type="text" id="search-tag-textbox" placeholder="Search By Tags" />
-              <Button onClick={this.searchByTag} variant="contained" color="secondary">Search</Button>
+             
+              <TextField type="text" id="search-tag-textbox"  placeholder="Search By Tags" />
+              <Button onClick={this.searchByTag} variant="outlined" >Search</Button>
+              <ShopItemTable />
+              <Button  variant="outlined"  className="addBtn" onClick={this.onOpenModal}>Add Shopitem</Button>
+              <Button variant="outlined" onClick={this.toggle}>Theme Change</Button>
+              <ItemDetail currentShopItem={this.state.currentShopItem} />
             </div>
-            <ShopItemTable />
-            <div className= "addBtn" onClick={this.onOpenModal}>Add Shopitem</div>
-            <ItemDetail currentShopItem={this.state.currentShopItem} />
-            <Modal open={open} onClose={this.onCloseModal}>
-				<form>
-					<div className="form-group">
-						<label>ShopItem Title</label>
-						<input type="text" className="form-control" id="shopitem-title-input" placeholder="Enter Title" />
-						
-					</div>
-          <div className="form-group">
-						<label>ShopItem Description</label>
-						<input type="text" className="form-control" id="shopitem-description-input" placeholder="Enter Description" />
-						
-					</div>
-					<div className="form-group">
-						<label>Tag</label>
-						<input type="text" className="form-control" id="shopitem-tag-input" placeholder="Enter Tag" />
-						
-					</div>
-          <div className="form-group">
-						<label>Price</label>
-						<input type="text" className="form-control" id="shopitem-price-input" placeholder="Enter Price" />
-						
-					</div>
-          <div className="form-group">
-						<label>AccessCode</label>
-						<input type="text" className="form-control" id="shopitem-accesscode-input" placeholder="Setup your Accesscode" />
-						
-					</div>
-					<div className="form-group">
-						<label>Image</label>
-						<input type="file" onChange={this.handleFileUpload} className="form-control-file" id="shopitem-image-input" />
-					</div>
-
-					<button type="button" className="btn" onClick={this.uploadShopitem}>Upload</button>
-				</form>
-			</Modal>
           </div>
           : ""}
+        <Modal open={open} onClose={this.onCloseModal}>
+          <form>
+            <div className="form-group">
+              <label>ShopItem Title</label>
+              <input type="text" className="form-control" id="shopitem-title-input" placeholder="Enter Title" />
+
+            </div>
+            <div className="form-group">
+              <label>ShopItem Description</label>
+              <input type="text" className="form-control" id="shopitem-description-input" placeholder="Enter Description" />
+
+            </div>
+            <div className="form-group">
+              <label>Tag</label>
+              <input type="text" className="form-control" id="shopitem-tag-input" placeholder="Enter Tag" />
+
+            </div>
+            <div className="form-group">
+              <label>Price</label>
+              <input type="text" className="form-control" id="shopitem-price-input" placeholder="Enter Price" />
+
+            </div>
+            <div className="form-group">
+              <label>AccessCode</label>
+              <input type="text" className="form-control" id="shopitem-accesscode-input" placeholder="Setup your Accesscode" />
+
+            </div>
+            <div className="form-group">
+              <label>Image</label>
+              <input type="file" onChange={this.handleFileUpload} className="form-control-file" id="shopitem-image-input" />
+            </div>
+
+            <button type="button" className="btn" onClick={this.uploadShopitem}>Upload</button>
+          </form>
+        </Modal>
       </div>
     );
   }
-  public tell(event: any) {
-    return (alert("I am not here"));
-  }
+
 
   public toggle(event: any) {
     this.setState(preState => {
       return { appear: !preState.appear };
     });
   }
+  // Search --Get
   private fetchMemes(tag: any) {
     const url = "https://opshopbank.azurewebsites.net/api/ShopItem/tag?tags=" + tag;
     fetch(url, {
@@ -132,7 +134,7 @@ class App extends React.Component<{}, IState>  {
       .then(json => {
         let currentShopItem = json[0]
         if (currentShopItem === undefined) {
-          currentShopItem = { "id": 0, "title": "No memes (╯°□°）╯︵ ┻━┻", "url": "", "tags": "try a different tag", "uploaded": "", "width": "0", "height": "0" }
+          currentShopItem = { "id": 0, "title": "No shopitem (╯°□°）╯︵ ┻━┻", "url": "", "tags": "try a different tag", "uploaded": "", "width": "0", "height": "0" }
         }
         console.log(json)
         this.setState({
@@ -151,21 +153,23 @@ class App extends React.Component<{}, IState>  {
   }
 
   // Modal open
-	private onOpenModal = () => {
-		this.setState({ open: true });
-	  };
-	
-	// Modal close
-	private onCloseModal = () => {
-		this.setState({ open: false });
-	};
-	
+  private onOpenModal = () => {
+    this.setState({ open: true });
+  };
+
+  // Modal close
+  private onCloseModal = () => {
+    this.setState({ open: false });
+  };
+
   private handleFileUpload(file: any) {
     this.setState({
       uploadShopitem: file.target.files
     })
   }
-  private uploadShopitem() {
+  // Upload
+  private uploadShopitem = async (e: any) => {
+    e.preventDefault();
     const titleInput = document.getElementById("shopitem-title-input") as HTMLInputElement
     const tagInput = document.getElementById("shopitem-tag-input") as HTMLInputElement
     const descriptionInput = document.getElementById("shopitem-description-input") as HTMLInputElement
@@ -174,14 +178,14 @@ class App extends React.Component<{}, IState>  {
     const imageFile = this.state.uploadShopitem[0]
 
     if (titleInput === null || tagInput === null || descriptionInput === null || priceInput === null || accessCodeInput === null || imageFile === null) {
-        return;
+      return;
     }
 
     const title = titleInput.value
     const tag = tagInput.value
     const description = descriptionInput.value
     const price = priceInput.value
-    const accesscode= accessCodeInput.value
+    const accesscode = accessCodeInput.value
     const url = "https://opshopbank.azurewebsites.net/api/ShopItem/upload"
 
     const formData = new FormData()
@@ -193,24 +197,26 @@ class App extends React.Component<{}, IState>  {
     formData.append("image", imageFile)
 
     fetch(url, {
-        body: formData,
-        headers: {'cache-control': 'no-cache'},
-        method: 'POST'
+      body: formData,
+      headers: { 'cache-control': 'no-cache' },
+      method: 'POST'
     })
-    .then((response : any) => {
+      .then((response: any) => {
         if (!response.ok) {
-            // Error State
-            alert(response.statusText)
+          // Error State
+          alert(response.statusText)
         } else {
-            location.reload()
+          // location.reload()
+          alert("This picture has been added, please click close button")
         }
-    })
-}
+      })
+  }
 
   private authenticate() {
     const screenshot = this.state.refCamera.current.getScreenshot();
     this.getFaceRecognitionResult(screenshot);
   }
+  // Face recognition
   private getFaceRecognitionResult(image: string) {
     if (image === null) {
       return;
