@@ -6,15 +6,20 @@ import ShopItemTable from './Components/ShopItemTable';
 // import ItemDetail from './Components/ItemDetail';
 import * as Webcam from "react-webcam";
 import Modal from 'react-responsive-modal';
-import TextField from '@material-ui/core/TextField';
 
+import GetApp from '@material-ui/icons/GetApp';
+import Edit from '@material-ui/icons/Edit';
+import Delete from '@material-ui/icons/Delete';
 import {
 	AppBar, createStyles, Theme,
 	Toolbar, Typography, withStyles,
-	MuiThemeProvider, createMuiTheme, GridList, GridListTile, ListSubheader, GridListTileBar, IconButton
+	MuiThemeProvider, createMuiTheme, GridList,
+	GridListTile, ListSubheader, GridListTileBar, IconButton,
+	TextField
 } from '../node_modules/@material-ui/core';
 
 const faceRegEnable = false;
+const accesscodeLength = 6;
 
 // import logo from './logo.svg';
 interface IState {
@@ -24,7 +29,8 @@ interface IState {
 	searchByTag: any,
 	authenticated: boolean,
 	refCamera: any,
-	open: boolean,
+	openAddItem: boolean,
+	openEdit: boolean,
 	uploadShopitem: any,
 	classes: any,
 	theme: "primary" | "secondary"
@@ -82,7 +88,8 @@ export const App = withStyles(styles)(
 				searchByTag: "",
 				authenticated: false,
 				refCamera: React.createRef(),
-				open: false,
+				openAddItem: false,
+				openEdit: false,
 				uploadShopitem: "",
 				classes: props,
 				theme: "primary"
@@ -94,11 +101,15 @@ export const App = withStyles(styles)(
 			this.authenticate = this.authenticate.bind(this)
 			this.handleFileUpload = this.handleFileUpload.bind(this)
 			this.uploadShopitem = this.uploadShopitem.bind(this)
+
+			this.downshopitem = this.downshopitem.bind(this)
+			this.deleteShopitem = this.deleteShopitem.bind(this)
+			this.updateShopitem = this.updateShopitem.bind(this)
 			// window.sessionStorage.setItem("authenticated", "false");
 		}
 
 		public render() {
-			const { open, shopItems, authenticated, classes } = this.state;
+			const { openAddItem, openEdit, shopItems, authenticated, classes } = this.state;
 			return (
 				<MuiThemeProvider theme={theme} >
 					<div className={classes.root}>
@@ -106,10 +117,10 @@ export const App = withStyles(styles)(
 							<Toolbar color="inherit">
 								<Typography variant="h6" color="inherit">
 									Op Shop
-                  <TextField type="text" id="search-tag-textbox" placeholder="Search By Tags" />
+                  					<TextField type="text" id="search-tag-textbox" placeholder="Search By Tags" />
 									<Button onClick={this.searchByTag} variant="text" color="inherit" ><Search color="inherit" /></Button>
 									<ShopItemTable />
-									<Button variant="text" className="addBtn" onClick={this.openModal} color="inherit"><Add color="inherit" /></Button>
+									<Button variant="text" className="addBtn" onClick={this.openAddItemMemu} color="inherit"><Add color="inherit" /></Button>
 									<Button variant="text" onClick={this.toggleTheme} color="inherit"><InvertColors color="inherit" /></Button>
 								</Typography>
 							</Toolbar>
@@ -131,23 +142,55 @@ export const App = withStyles(styles)(
 							<div className={classes.root}>
 								<GridList cellHeight={"auto"} className={classes.gridList}>
 									<GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
-										<ListSubheader component="div">December</ListSubheader>
+										<ListSubheader component="div">Your item list</ListSubheader>
 									</GridListTile>
 									{shopItems.length > 0 &&
 										shopItems.map(tile => (
-											<GridListTile key={tile.id}>
-												<img src={tile.url} alt={tile.title} />
-												<GridListTileBar
-													title={tile.title}
-													subtitle={<span>Price: {tile.price}</span>}
+											<div key={tile.id}>
+												<GridListTile>
+													<img src={tile.url} alt={tile.title} />
+													<div>
+														<Modal open={openEdit} onClose={this.closeEditMemu}>
+															<form>
+																<div className="form-group">
+																	<TextField type="text" label={"Title"} id="shopitem-title-input" margin="normal" defaultValue={tile.title} placeholder="Enter Title" />
+																</div>
+																<div className="form-group">
+																	<TextField type="text" label={"Description"} id="shopitem-description-input" margin="normal" defaultValue={tile.description} placeholder="Enter Description" />
+																</div>
+																<div className="form-group">
+																	<TextField type="text" label={"Tags"} id="shopitem-tag-input" margin="normal" defaultValue={tile.tags} placeholder="Enter Tag" />
+																</div>
+																<div className="form-group">
+																	<TextField type="text" label={"Price"} id="shopitem-price-input" margin="normal" defaultValue={tile.price} placeholder="Enter Price" />
+																</div>
+																<div className="form-group">
+																	<TextField type="text" label={"Access Code"} id="shopitem-accesscode-input" margin="normal" placeholder="Enter Accesscode" color="inherit" />
+																</div>
+																<Button onClick={this.updateShopitem.bind(this, tile)}>Update</Button>
+															</form>
+														</Modal>
+													</div>
+													<GridListTileBar
+														title={tile.title}
+														subtitle={<span>Price: {tile.price}</span>}
 
-													actionIcon={
-														<IconButton className={classes.icon} onClick={() => { alert("ShopItem description: " + tile.description) }}>
-															<Info />
-														</IconButton>
-													}
-												/>
-											</GridListTile>
+														actionIcon={
+															<IconButton className={classes.icon} onClick={() => { alert("ShopItem description: " + tile.description) }}>
+																<Info />
+															</IconButton>
+														}
+													/>
+												</GridListTile>
+												<div>
+													<Button variant="text" onClick={this.downshopitem.bind(this, tile.url)}><GetApp /></Button>
+													<Button variant="text" onClick={this.openEditMemu}><Edit /> </Button>
+													<Button variant="text" onClick={this.deleteShopitem.bind(this, tile)}><Delete /></Button>
+													<Button variant="text" href="https://www.facebook.com/sharer/sharer.php?u=example.org" target={tile.url} >
+														Share on Facebook
+													</Button>
+												</div>
+											</div>
 										))}
 
 
@@ -156,7 +199,7 @@ export const App = withStyles(styles)(
 								</GridList>
 							</div>
 							: ""}
-						<Modal open={open} onClose={this.closeModal}>
+						<Modal open={openAddItem} onClose={this.closeAddItemMemu}>
 							<form>
 								<div className="form-group">
 									<TextField type="text" label={"Title"} id="shopitem-title-input" margin="normal" placeholder="ShopItem Title" color="inherit" />
@@ -183,6 +226,89 @@ export const App = withStyles(styles)(
 					</div >
 				</MuiThemeProvider>
 			);
+		}
+
+		private downshopitem(url: any) {
+			window.open(url);
+		}
+		private deleteShopitem(currentShopItem: any) {
+			const accesscodeInput = prompt("Please enter the access code");
+			if (accesscodeInput !== currentShopItem.accessCode) {
+				alert("Access Code is incorrect.");
+				return;
+			}
+			const url = "https://opshopbank.azurewebsites.net/api/ShopItem/" + currentShopItem.id
+
+			fetch(url, {
+				method: 'DELETE'
+			})
+				.then((response: any) => {
+					if (!response.ok) {
+						// Error Response
+						alert(response.statusText)
+					}
+					else {
+
+						alert("This picture has been deleted");
+						this.setState({ openEdit: false });
+					}
+				})
+		}
+
+		private openEditMemu = () => {
+			this.setState({ openEdit: true });
+		};
+
+		// Modal Close
+		private closeEditMemu = () => {
+			this.setState({ openEdit: false });
+		};
+
+		private updateShopitem(currentShopItem: any) {
+			console.log("current item");
+			console.log(currentShopItem)
+			const titleInput = document.getElementById("shopitem-title-input") as HTMLInputElement
+			const tagInput = document.getElementById("shopitem-tag-input") as HTMLInputElement
+			const descriptionInput = document.getElementById("shopitem-description-input") as HTMLInputElement
+			const priceInput = document.getElementById("shopitem-price-input") as HTMLInputElement
+			const accesscodeInput = document.getElementById("shopitem-accesscode-input") as HTMLInputElement
+			if (titleInput === null || tagInput === null || descriptionInput === null || priceInput === null || accesscodeInput === null) {
+				return;
+			}
+			const url = "https://opshopbank.azurewebsites.net/api/ShopItem/" + currentShopItem.id
+			const updatedTitle = titleInput.value
+			const updatedTag = tagInput.value
+			const updatedPrice = priceInput.value
+			const updateddescription = descriptionInput.value
+			const accesscode = accesscodeInput.value
+			if (accesscode !== currentShopItem.accessCode) {
+				alert("Access Code is incorrect.");
+				return;
+			}
+			fetch(url, {
+				body: JSON.stringify({
+					"height": currentShopItem.height,
+					"id": currentShopItem.id,
+					"price": updatedPrice,
+					"description": updateddescription,
+					"accesscode": currentShopItem.accessCode,
+					"tags": updatedTag,
+					"title": updatedTitle,
+					"uploaded": currentShopItem.uploaded,
+					"url": currentShopItem.url,
+					"width": currentShopItem.width
+				}),
+				headers: { 'cache-control': 'no-cache', 'Content-Type': 'application/json' },
+				method: 'PUT'
+			})
+				.then((response: any) => {
+					if (!response.ok) {
+						// Error State
+						alert(response.statusText + " " + url)
+					} else {
+						this.closeEditMemu();
+					}
+				})
 		}
 
 		public toggleTheme(event: any) {
@@ -221,13 +347,13 @@ export const App = withStyles(styles)(
 		}
 
 		// Modal open
-		private openModal = () => {
-			this.setState({ open: true });
+		private openAddItemMemu = () => {
+			this.setState({ openAddItem: true });
 		};
 
 		// Modal close
-		private closeModal = () => {
-			this.setState({ open: false });
+		private closeAddItemMemu = () => {
+			this.setState({ openAddItem: false });
 		};
 
 		private handleFileUpload(file: any) {
@@ -255,6 +381,10 @@ export const App = withStyles(styles)(
 			const price = priceInput.value
 			const accesscode = accessCodeInput.value
 			const url = "https://opshopbank.azurewebsites.net/api/ShopItem/upload"
+			if (accesscode.length < accesscodeLength) {
+				alert("The access code must be at least 6 characters.");
+				return;
+			}
 
 			const formData = new FormData()
 			formData.append("Title", title)
@@ -275,7 +405,7 @@ export const App = withStyles(styles)(
 						alert(response.statusText)
 					} else {
 						alert("This item has been uploaded to your list.");
-						this.closeModal();
+						this.closeAddItemMemu();
 					}
 				})
 		}
