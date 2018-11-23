@@ -43,12 +43,11 @@ class App extends React.Component<{}, IState>  {
     this.authenticate = this.authenticate.bind(this)
     this.handleFileUpload = this.handleFileUpload.bind(this)
     this.uploadShopitem = this.uploadShopitem.bind(this)
-    window.sessionStorage.setItem("authenticated", "false");
+    // window.sessionStorage.setItem("authenticated", "false");
   }
 
   public render() {
-    const { open, shopItems } = this.state;
-    const authenticated = window.sessionStorage.getItem("authenticated")==="true";
+    const { open, shopItems, authenticated } = this.state;
     return (
       <div >
         <div>
@@ -247,9 +246,11 @@ class App extends React.Component<{}, IState>  {
           response.json().then((json: any) => {
             const predictionResult = json.predictions[0];
             if (predictionResult.probability > 0.7) {
-              window.sessionStorage.setItem("authenticated","true");
+              // window.sessionStorage.setItem("authenticated","true");
+              this.setState({ authenticated: true });
             } else {
-              window.sessionStorage.setItem("authenticated","false");
+              // window.sessionStorage.setItem("authenticated","false");
+              this.setState({ authenticated: false });
 
             }
           });
