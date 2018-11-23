@@ -7,12 +7,12 @@ import * as Webcam from "react-webcam";
 import Modal from 'react-responsive-modal';
 import TextField from '@material-ui/core/TextField';
 
-const faceRegEnable = true;
+const faceRegEnable = false;
 
 // import logo from './logo.svg';
 interface IState {
   appear: boolean,
-  currentShopItem: any,
+  // currentShopItem: any,
   shopItems: any[],
   searchByTag: any,
   authenticated: boolean,
@@ -28,7 +28,7 @@ class App extends React.Component<{}, IState>  {
     super(props);
     this.state = {
       appear: true,
-      currentShopItem: { "id": 0, "title": " ", "url": "", "tags": "⚆ _ ⚆", "uploaded": "", "width": "0", "height": "0" },
+      // currentShopItem: [],
       shopItems: [],
       searchByTag: "",
       authenticated: false,
@@ -43,14 +43,16 @@ class App extends React.Component<{}, IState>  {
     this.authenticate = this.authenticate.bind(this)
     this.handleFileUpload = this.handleFileUpload.bind(this)
     this.uploadShopitem = this.uploadShopitem.bind(this)
+    window.sessionStorage.setItem("authenticated", "false");
   }
 
   public render() {
-    const { open, authenticated } = this.state
+    const { open, shopItems } = this.state;
+    const authenticated = window.sessionStorage.getItem("authenticated")==="true";
     return (
       <div >
         <div>
-          {(!authenticated && faceRegEnable) ?
+          {(!(authenticated) && faceRegEnable) ?
             <Modal open={!authenticated} onClose={this.authenticate} closeOnOverlayClick={false} showCloseIcon={false} center={true}>
               <Webcam
                 audio={false}
@@ -76,7 +78,12 @@ class App extends React.Component<{}, IState>  {
               <Button variant="outlined" className="addBtn" onClick={this.onOpenModal}>Add Shopitem</Button>
               <Button variant="outlined" onClick={this.toggle}>Theme Change</Button>
             </div>
-            <ItemDetail currentShopItem={this.state.currentShopItem} />
+            {shopItems.length > 0 &&
+              shopItems.map((value: any) => {
+                console.log(value)
+                return <ItemDetail key={value.id} currentShopItem={value} />
+              })
+            }
           </div>
           : ""}
         <Modal open={open} onClose={this.onCloseModal}>
@@ -118,7 +125,6 @@ class App extends React.Component<{}, IState>  {
     );
   }
 
-
   public toggle(event: any) {
     this.setState(preState => {
       return { appear: !preState.appear };
@@ -132,15 +138,15 @@ class App extends React.Component<{}, IState>  {
     })
       .then(res => res.json())
       .then(json => {
-        let currentShopItem = json[0]
-        if (currentShopItem === undefined) {
-          currentShopItem = { "id": 0, "title": "No shopitem (╯°□°）╯︵ ┻━┻", "url": "", "tags": "try a different tag", "uploaded": "", "width": "0", "height": "0" }
+        if (json.length === 0) {
+          console.log("No result");
+          return
+        } else {
+          console.log(json)
+          this.setState({
+            shopItems: json
+          });
         }
-        console.log(json)
-        this.setState({
-          currentShopItem,
-          shopItems: json
-        })
       });
   }
   private searchByTag() {
@@ -241,9 +247,9 @@ class App extends React.Component<{}, IState>  {
           response.json().then((json: any) => {
             const predictionResult = json.predictions[0];
             if (predictionResult.probability > 0.7) {
-              this.setState({ authenticated: true })
+              window.sessionStorage.setItem("authenticated","true");
             } else {
-              this.setState({ authenticated: false })
+              window.sessionStorage.setItem("authenticated","false");
 
             }
           });

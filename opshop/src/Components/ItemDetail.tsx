@@ -11,7 +11,7 @@ interface IState {
 
 
 
-export default class ShopItemTable extends React.Component<IProps, IState>{
+export default class ItemDetail extends React.Component<IProps, IState>{
 
     constructor(props: any) {
         super(props)
