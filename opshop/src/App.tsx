@@ -7,7 +7,7 @@ import * as Webcam from "react-webcam";
 import Modal from 'react-responsive-modal';
 import TextField from '@material-ui/core/TextField';
 
-
+const faceRegEnable = true;
 
 // import logo from './logo.svg';
 interface IState {
@@ -36,7 +36,7 @@ class App extends React.Component<{}, IState>  {
       open: false,
       uploadShopitem: ""
     }
-    
+
     this.toggle = this.toggle.bind(this);
     this.fetchMemes = this.fetchMemes.bind(this)
     this.searchByTag = this.searchByTag.bind(this)
@@ -50,7 +50,7 @@ class App extends React.Component<{}, IState>  {
     return (
       <div >
         <div>
-          {(!authenticated) ?
+          {(!authenticated && faceRegEnable) ?
             <Modal open={!authenticated} onClose={this.authenticate} closeOnOverlayClick={false} showCloseIcon={false} center={true}>
               <Webcam
                 audio={false}
@@ -62,21 +62,21 @@ class App extends React.Component<{}, IState>  {
               </div>
             </Modal> : ""}
         </div>
-        {(authenticated) ?
+        {(authenticated || !faceRegEnable) ?
           <div>
-           
+
             <p className="App-intro" style={{ visibility: this.state.appear ? 'visible' : 'hidden' }}>
               Welcome to Op Shop Online.</p>
-            
+
             <div >
-             
-              <TextField type="text" id="search-tag-textbox"  placeholder="Search By Tags" />
+
+              <TextField type="text" id="search-tag-textbox" placeholder="Search By Tags" />
               <Button onClick={this.searchByTag} variant="outlined" >Search</Button>
               <ShopItemTable />
-              <Button  variant="outlined"  className="addBtn" onClick={this.onOpenModal}>Add Shopitem</Button>
+              <Button variant="outlined" className="addBtn" onClick={this.onOpenModal}>Add Shopitem</Button>
               <Button variant="outlined" onClick={this.toggle}>Theme Change</Button>
-              <ItemDetail currentShopItem={this.state.currentShopItem} />
             </div>
+            <ItemDetail currentShopItem={this.state.currentShopItem} />
           </div>
           : ""}
         <Modal open={open} onClose={this.onCloseModal}>

@@ -2,33 +2,33 @@ import MediaStreamRecorder from 'msr';
 import * as React from 'react';
 import { Button } from '../../node_modules/@material-ui/core';
 
-interface IProps{
-    
+interface IProps {
+
 
 }
 
-export default class ShopItemTable extends React.Component<IProps,{}>{
-    constructor(props:any){
+export default class ShopItemTable extends React.Component<IProps, {}>{
+    constructor(props: any) {
         super(props)
-        this.searchTagByVoice=this.searchTagByVoice.bind(this)
-        this.postAudio= this.postAudio.bind(this)
-       
+        this.searchTagByVoice = this.searchTagByVoice.bind(this)
+        this.postAudio = this.postAudio.bind(this)
+
     }
-    
-    public render(){
+
+    public render() {
         return (
-        
-                <Button variant="outlined" className="btn" onClick={this.searchTagByVoice}><i className="fa fa-microphone" /></Button>
-         
+
+            <Button variant="outlined" className="btn" onClick={this.searchTagByVoice}><i className="fa fa-microphone" /></Button>
+
         )
     }
 
 
-    private searchTagByVoice(){
+    private searchTagByVoice() {
         const mediaConstraints = {
-        audio: true
-    }
-    navigator.mediaDevices.getUserMedia(mediaConstraints)
+            audio: true
+        }
+        navigator.mediaDevices.getUserMedia(mediaConstraints)
             .then((stream: any) => {
                 const mediaRecorder = new MediaStreamRecorder(stream);
                 mediaRecorder.mimeType = 'audio/wav'; // check this line for audio/wav
@@ -43,9 +43,9 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
             });
     }
 
-    private postAudio(blob:any) {
-        let accessToken :any
-       
+    private postAudio(blob: any) {
+        let accessToken: any
+
         fetch("https://westus.api.cognitive.microsoft.com/sts/v1.0/issueToken", {
             headers: {
                 'Content-Length': '0',
@@ -57,11 +57,11 @@ export default class ShopItemTable extends React.Component<IProps,{}>{
             // console.log(response.text())
             return response.text()
         }).then((response) => {
-            accessToken=response
+            accessToken = response
         }).catch((error) => {
             console.log("Error", error)
         });
-        
+
         // posting audio
         fetch("https://westus.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US", {
             body: blob, // this is a .wav audio file    
