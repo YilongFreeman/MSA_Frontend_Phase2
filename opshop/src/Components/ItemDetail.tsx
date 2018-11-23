@@ -4,6 +4,7 @@ import Modal from 'react-responsive-modal';
 import GetApp from '@material-ui/icons/GetApp';
 import Edit from '@material-ui/icons/Edit';
 import Delete from '@material-ui/icons/Delete';
+import { TextField } from '../../node_modules/@material-ui/core';
 
 interface IProps {
     currentShopItem: any
@@ -19,7 +20,7 @@ export default class ItemDetail extends React.Component<IProps, IState>{
     constructor(props: any) {
         super(props)
         this.state = {
-            open: false
+            open: false,
         }
         this.downshopitem = this.downshopitem.bind(this)
         this.deleteShopitem = this.deleteShopitem.bind(this)
@@ -36,15 +37,16 @@ export default class ItemDetail extends React.Component<IProps, IState>{
             <div>
                 <div>
                     <img height="auto" src={currentShopItem.url} />
-                    <div> {currentShopItem.price} {currentShopItem.description} {currentShopItem.title}
+                    <div>
+                        {currentShopItem.price} {currentShopItem.description} {currentShopItem.title}
                     </div>
 
                 </div>
                 <div>
-                    <Button variant="outlined" onClick={this.downshopitem.bind(this, currentShopItem.url)}><GetApp/></Button>
-                    <Button variant="outlined" onClick={this.openModal}><Edit/> </Button>
-                    <Button variant="outlined" onClick={this.deleteShopitem.bind(this, currentShopItem.id)}><Delete/></Button>
-                    <Button variant="outlined" href="https://www.facebook.com/sharer/sharer.php?u=example.org" target={currentShopItem.url} >
+                    <Button variant="text" onClick={this.downshopitem.bind(this, currentShopItem.url)}><GetApp/></Button>
+                    <Button variant="text" onClick={this.openModal}><Edit/> </Button>
+                    <Button variant="text" onClick={this.deleteShopitem.bind(this, currentShopItem.id)}><Delete/></Button>
+                    <Button variant="text" href="https://www.facebook.com/sharer/sharer.php?u=example.org" target={currentShopItem.url} >
                         Share on Facebook
               </Button>
                 </div>
@@ -54,34 +56,22 @@ export default class ItemDetail extends React.Component<IProps, IState>{
                 <Modal open={open} onClose={this.closeModal}>
                     <form>
                         <div className="form-group">
-                            <label>ShopItem Title</label>
-                            <input type="text" className="form-control" id="shopitem-title-input" placeholder="Enter Title" />
-
+                            <TextField type="text" label={"Title"} id="shopitem-title-input" margin="normal" defaultValue={currentShopItem.title} placeholder="Enter Title" />
                         </div>
                         <div className="form-group">
-                            <label>ShopItem Description</label>
-                            <input type="text" className="form-control" id="shopitem-description-input" placeholder="Enter Description" />
-
+                            <TextField type="text" label={"Description"} id="shopitem-description-input" margin="normal" defaultValue={currentShopItem.description} placeholder="Enter Description" />                            
                         </div>
                         <div className="form-group">
-                            <label>Tag</label>
-                            <input type="text" className="form-control" id="shopitem-tag-input" placeholder="Enter Tag" />
-
+                            <TextField type="text" label={"Tags"} id="shopitem-tag-input" margin="normal" defaultValue={currentShopItem.tags} placeholder="Enter Tag" />
                         </div>
                         <div className="form-group">
-                            <label>Price</label>
-                            <input type="text" className="form-control" id="shopitem-price-input" placeholder="Enter Price" />
-
+                            <TextField type="text" label={"Price"} id="shopitem-price-input" margin="normal" defaultValue={currentShopItem.price} placeholder="Enter Price" />
                         </div>
                         <Button onClick={this.updateShopitem}>Update</Button>
                     </form>
                 </Modal>
-
-
             </div>
-
         )
-
     };
 
     private downshopitem(url: any) {
@@ -100,7 +90,8 @@ export default class ItemDetail extends React.Component<IProps, IState>{
                 }
                 else {
 
-                    alert("This picture has been deleted")
+                    alert("This picture has been deleted");
+                    this.setState({open: false});
                 }
             })
     }

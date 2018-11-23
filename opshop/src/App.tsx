@@ -67,10 +67,10 @@ export const App = withStyles(styles)(
               <Typography variant="h6" color="inherit">
                 Op Shop
                 <TextField type="text" id="search-tag-textbox" placeholder="Search By Tags" />
-                <Button onClick={this.searchByTag} variant="outlined" ><Search /></Button>
+                <Button onClick={this.searchByTag} variant="text" ><Search /></Button>
                 <ShopItemTable />
-                <Button variant="outlined" className="addBtn" onClick={this.openModal}><Add /></Button>
-                <Button variant="outlined" onClick={this.toggle}><InvertColors/></Button>
+                <Button variant="text" className="addBtn" onClick={this.openModal}><Add /></Button>
+                <Button variant="text" onClick={this.toggle}><InvertColors/></Button>
               </Typography>
             </Toolbar>
           </AppBar>
@@ -89,18 +89,6 @@ export const App = withStyles(styles)(
           </div>
           {(authenticated || !faceRegEnable) ?
             <div>
-
-              <p className="App-intro" style={{ visibility: this.state.appear ? 'visible' : 'hidden' }}>
-                Welcome to Op Shop Online.</p>
-
-              <div >
-
-                <TextField type="text" id="search-tag-textbox" placeholder="Search By Tags" />
-                <Button onClick={this.searchByTag} variant="outlined" >Search</Button>
-                <ShopItemTable />
-                <Button variant="outlined" className="addBtn" onClick={this.openModal}>Add Shopitem</Button>
-                <Button variant="outlined" onClick={this.toggle}>Theme Change</Button>
-              </div>
               {shopItems.length > 0 &&
                 shopItems.map((value: any) => {
                   console.log(value)
@@ -235,9 +223,8 @@ export const App = withStyles(styles)(
             // Error State
             alert(response.statusText)
           } else {
-            // location.reload()
+            alert("This item has been uploaded to your list.");
             this.closeModal();
-            // alert("This picture has been added, please click close button")
           }
         })
     }
