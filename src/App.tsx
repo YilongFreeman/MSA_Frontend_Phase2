@@ -18,7 +18,7 @@ import {
 	TextField
 } from '../node_modules/@material-ui/core';
 
-const faceRegEnable = false;
+const faceRegEnable = true;
 const accesscodeLength = 6;
 
 // import logo from './logo.svg';
