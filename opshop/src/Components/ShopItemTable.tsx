@@ -19,7 +19,7 @@ export default class ShopItemTable extends React.Component<IProps, {}>{
     public render() {
         return (
 
-            <Button variant="text" className="btn" onClick={this.searchTagByVoice}><Mic/></Button>
+            <Button variant="text" className="btn" onClick={this.searchTagByVoice} color="inherit"><Mic color="inherit"/></Button>
 
         )
     }
