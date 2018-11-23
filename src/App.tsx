@@ -188,7 +188,7 @@ export const App = withStyles(styles)(
 													<Button variant="text" onClick={this.downshopitem.bind(this, tile.url)}><GetApp /></Button>
 													<Button variant="text" onClick={this.openEditMemu}><Edit /> </Button>
 													<Button variant="text" onClick={this.deleteShopitem.bind(this, tile)}><Delete /></Button>
-													<Button variant="text" href="https://www.facebook.com/sharer/sharer.php?u=example.org" target={tile.url} >
+													<Button variant="text" href={"https://www.facebook.com/sharer/sharer.php?u="+tile.url} target={"_blank"} >
 														Share on Facebook
 													</Button>
 												</div>
