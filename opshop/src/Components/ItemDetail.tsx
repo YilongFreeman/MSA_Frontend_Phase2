@@ -1,6 +1,9 @@
 import * as React from 'react';
 import Button from '@material-ui/core/Button';
 import Modal from 'react-responsive-modal';
+import GetApp from '@material-ui/icons/GetApp';
+import Edit from '@material-ui/icons/Edit';
+import Delete from '@material-ui/icons/Delete';
 
 interface IProps {
     currentShopItem: any
@@ -38,9 +41,9 @@ export default class ItemDetail extends React.Component<IProps, IState>{
 
                 </div>
                 <div>
-                    <Button variant="outlined" onClick={this.downshopitem.bind(this, currentShopItem.url)}>Download</Button>
-                    <Button variant="outlined" onClick={this.onOpenModal}>Edit </Button>
-                    <Button variant="outlined" onClick={this.deleteShopitem.bind(this, currentShopItem.id)}>Delete</Button>
+                    <Button variant="outlined" onClick={this.downshopitem.bind(this, currentShopItem.url)}><GetApp/></Button>
+                    <Button variant="outlined" onClick={this.openModal}><Edit/> </Button>
+                    <Button variant="outlined" onClick={this.deleteShopitem.bind(this, currentShopItem.id)}><Delete/></Button>
                     <Button variant="outlined" href="https://www.facebook.com/sharer/sharer.php?u=example.org" target={currentShopItem.url} >
                         Share on Facebook
               </Button>
@@ -48,7 +51,7 @@ export default class ItemDetail extends React.Component<IProps, IState>{
 
 
 
-                <Modal open={open} onClose={this.onCloseModal}>
+                <Modal open={open} onClose={this.closeModal}>
                     <form>
                         <div className="form-group">
                             <label>ShopItem Title</label>
@@ -102,12 +105,12 @@ export default class ItemDetail extends React.Component<IProps, IState>{
             })
     }
 
-    private onOpenModal = () => {
+    private openModal = () => {
         this.setState({ open: true });
     };
 
     // Modal Close
-    private onCloseModal = () => {
+    private closeModal = () => {
         this.setState({ open: false });
     };
 
@@ -148,7 +151,7 @@ export default class ItemDetail extends React.Component<IProps, IState>{
                     // Error State
                     alert(response.statusText + " " + url)
                 } else {
-                    location.reload()
+                    this.closeModal()
                 }
             })
     }

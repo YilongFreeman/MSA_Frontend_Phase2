@@ -1,5 +1,6 @@
 import MediaStreamRecorder from 'msr';
 import * as React from 'react';
+import Mic from '@material-ui/icons/Mic';
 import { Button } from '../../node_modules/@material-ui/core';
 
 interface IProps {
@@ -18,7 +19,7 @@ export default class ShopItemTable extends React.Component<IProps, {}>{
     public render() {
         return (
 
-            <Button variant="outlined" className="btn" onClick={this.searchTagByVoice}><i className="fa fa-microphone" /></Button>
+            <Button variant="outlined" className="btn" onClick={this.searchTagByVoice}><Mic/></Button>
 
         )
     }
