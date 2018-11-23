@@ -116,8 +116,10 @@ export const App = withStyles(styles)(
 						<AppBar position="static" color={this.state.theme}>
 							<Toolbar color="inherit">
 								<Typography variant="h6" color="inherit">
-									Op Shop
-                  					<TextField type="text" id="search-tag-textbox" placeholder="Search By Tags" />
+									<span>
+										<img src={require("./Logo.png")} style={{ verticalAlign: "middle" }} />
+									</span> Op Shop
+                  					<TextField type="text" style={{ marginLeft: "15px" }} id="search-tag-textbox" placeholder="Search By Tags" />
 									<Button onClick={this.searchByTag} variant="text" color="inherit" ><Search color="inherit" /></Button>
 									<ShopItemTable />
 									<Button variant="text" className="addBtn" onClick={this.openAddItemMemu} color="inherit"><Add color="inherit" /></Button>
